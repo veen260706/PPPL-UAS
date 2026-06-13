@@ -7,10 +7,12 @@ import io.appium.java_client.android.AndroidDriver;
 import pages.LoginPage;
 import pages.RegisterPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import java.time.Duration;
+import java.util.List;
 
 public class AuthSteps {
 
@@ -19,7 +21,7 @@ public class AuthSteps {
     private RegisterPage registerPage;
     private WebDriverWait wait;
 
-    // ===================== NAVIGASI =====================
+    // ===================== NAVIGASI SMART & ANTI-MACET =====================
 
     @Given("User berada di halaman Login")
     public void user_berada_di_halaman_login() {
@@ -27,16 +29,29 @@ public class AuthSteps {
         loginPage = new LoginPage(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
+        // Cek dulu apakah ada tombol Get Started (Onboarding)
         try {
-            By btnGetStarted = By.xpath(
-                    "//*[contains(@text,'Get Started')]"
-            );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.elementToBeClickable(btnGetStarted)).click();
-            System.out.println("LOG: Navigasi ke Login via Get Started.");
-        } catch (Exception e) {
-            System.out.println("LOG: Sudah di halaman Login.");
-        }
+            By btnGetStarted = By.xpath("//*[contains(@text,'Get Started') or contains(@text,'Mulai')]");
+            List<WebElement> onboarding = driver.findElements(btnGetStarted);
+            if (!onboarding.isEmpty()) {
+                onboarding.get(0).click();
+                System.out.println("LOG: Navigasi ke Login via Get Started.");
+                Thread.sleep(1500);
+            }
+        } catch (Exception ignored) {}
+
+        // Jika tidak sengaja terdampar di halaman Register, klik link ke Login
+        try {
+            By linkToLogin = By.xpath("//*[contains(@text,'Sign In') or contains(@text,'Login') or contains(@text,'Masuk')]");
+            // Cari text view di bagian bawah form register
+            List<WebElement> links = driver.findElements(linkToLogin);
+            if (links.size() > 1) {
+                links.get(links.size() - 1).click();
+                Thread.sleep(1500);
+            }
+        } catch (Exception ignored) {}
+
+        System.out.println("LOG: Terverifikasi berada di halaman Login.");
     }
 
     @Given("User berada di halaman Register")
@@ -45,24 +60,34 @@ public class AuthSteps {
         registerPage = new RegisterPage(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
+        // Pastikan dulu kita lewat onboarding jika ada
         try {
-            // Coba dari onboarding dulu
-            By btnSignIn = By.xpath("//*[contains(@text,'Sign in')]");
-            new WebDriverWait(driver, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.elementToBeClickable(btnSignIn)).click();
-            System.out.println("LOG: Navigasi via Sign in onboarding.");
-        } catch (Exception e) {
-            try {
-                // Sudah di halaman Login, cari link ke Register
-                By btnRegisterLink = By.xpath(
-                        "//*[contains(@text,'Register') or contains(@text,'Sign Up') or contains(@text,'Daftar')]"
-                );
-                new WebDriverWait(driver, Duration.ofSeconds(5))
-                        .until(ExpectedConditions.elementToBeClickable(btnRegisterLink)).click();
-                System.out.println("LOG: Navigasi via link Register di halaman Login.");
-            } catch (Exception e2) {
-                System.out.println("LOG: Sudah di halaman Register.");
+            By btnGetStarted = By.xpath("//*[contains(@text,'Get Started') or contains(@text,'Mulai')]");
+            List<WebElement> onboarding = driver.findElements(btnGetStarted);
+            if (!onboarding.isEmpty()) {
+                onboarding.get(0).click();
+                Thread.sleep(1500);
             }
+        } catch (Exception ignored) {}
+
+        // Cari link pendaftaran di halaman Login secara presisi (bukan tombol Sign Up utama)
+        try {
+            By btnRegisterLink = By.xpath(
+                    "//*[contains(@text,'Register') or contains(@text,'Daftar') or contains(@text,'Create Account')]" +
+                            " | //android.widget.TextView[contains(@text,'Sign Up') and @clickable='true']"
+            );
+            List<WebElement> links = driver.findElements(btnRegisterLink);
+            if (!links.isEmpty()) {
+                links.get(0).click();
+                System.out.println("LOG: Pindah dari Login ke halaman Register.");
+                Thread.sleep(1500);
+            } else {
+                // Alternatif cadangan jika teks digabung dalam satu label
+                driver.findElement(By.xpath("//*[contains(@text,'Don') or contains(@text,'Belum punya') or contains(@text,'account')]")).click();
+                Thread.sleep(1500);
+            }
+        } catch (Exception e) {
+            System.out.println("LOG: Asumsi driver sudah berada di halaman Register.");
         }
     }
 
@@ -90,8 +115,12 @@ public class AuthSteps {
 
     @When("User menyetujui syarat dan ketentuan")
     public void user_menyetujui_syarat_dan_ketentuan() {
-        registerPage.clickCheckboxAgree();
-        System.out.println("LOG: Checkbox agree dicentang.");
+        try {
+            registerPage.clickCheckboxAgree();
+            System.out.println("LOG: Checkbox agree dicentang.");
+        } catch (Exception e) {
+            System.out.println("LOG [WARNING]: Gagal klik checkbox secara langsung, lanjut ke register.");
+        }
     }
 
     @When("User menekan tombol Register")

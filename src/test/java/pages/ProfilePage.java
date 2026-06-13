@@ -15,13 +15,26 @@ public class ProfilePage {
     AppiumDriver driver;
     WebDriverWait wait;
 
-    private By btnChangePassword = By.xpath("//android.widget.TextView[contains(@text,'Change Password')]");
-    private By btnChangeEmail = By.xpath("//android.widget.TextView[contains(@text,'Change Email')]");
-    private By btnLogout = By.xpath("//android.widget.TextView[contains(@text,'Logout')]");
+    private By btnChangePassword = By.xpath("//*[contains(@text,'Change Password') or contains(@text,'Ubah Password')]");
+    private By btnChangeEmail = By.xpath("//*[contains(@text,'Change Email') or contains(@text,'Ubah Email')]");
+    private By btnLogout = By.xpath("//*[contains(@text,'Logout') or contains(@text,'Keluar')]");
 
     public ProfilePage(AppiumDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    // Fungsi bantu untuk scroll layar ke bawah secara otomatis hingga teks target terlihat
+    private void scrollToText(String text) {
+        try {
+            driver.findElement(io.appium.java_client.AppiumBy.androidUIAutomator(
+                    "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(" +
+                            "new UiSelector().textContains(\"" + text + "\"));"
+            ));
+            Thread.sleep(800); // Beri jeda sangat singkat agar UI stabil pasca-scroll
+        } catch (Exception ignored) {
+            System.out.println("LOG [WARNING]: Gagal scroll otomatis ke teks: " + text + ". Mencoba posisi layar saat ini.");
+        }
     }
 
     private void tapElement(WebElement el) throws Exception {
@@ -29,8 +42,7 @@ public class ProfilePage {
         int y = el.getLocation().getY() + el.getSize().getHeight() / 2;
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence tap = new Sequence(finger, 1);
-        tap.addAction(finger.createPointerMove(Duration.ZERO,
-                PointerInput.Origin.viewport(), x, y));
+        tap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, y));
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         driver.perform(Arrays.asList(tap));
@@ -40,13 +52,14 @@ public class ProfilePage {
     // =================== LOGOUT ===================
 
     public void clickLogout() {
+        scrollToText("Logout"); // Gulir ke bawah dulu mencari tombol Logout
         wait.until(ExpectedConditions.elementToBeClickable(btnLogout)).click();
         System.out.println("LOG: Tombol Logout diklik.");
     }
 
     public boolean isLoggedOut() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1500);
             By loginIndicator = By.xpath(
                     "//*[contains(@text,'Welcome Back') or contains(@text,'Log In') or contains(@text,'Get Started')]"
             );
@@ -60,6 +73,7 @@ public class ProfilePage {
     // =================== CHANGE PASSWORD ===================
 
     public void clickChangePassword() {
+        scrollToText("Change Password"); // Gulir ke bawah dulu mencari tombol Change Password
         wait.until(ExpectedConditions.elementToBeClickable(btnChangePassword)).click();
         System.out.println("LOG: Tombol Change Password diklik.");
     }
@@ -88,9 +102,9 @@ public class ProfilePage {
     public void clickSavePassword() {
         try {
             WebElement btn = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath("//android.widget.TextView[@text='Save Password']")));
+                    By.xpath("//*[@text='Save Password' or contains(@text,'Save') or contains(@text,'Simpan')]")));
             tapElement(btn);
-            Thread.sleep(2000);
+            System.out.println("LOG: Perintah simpan password dikirim.");
         } catch (Exception e) {
             throw new RuntimeException("Tombol Save Password tidak bisa diklik: " + e.getMessage());
         }
@@ -98,55 +112,48 @@ public class ProfilePage {
 
     public boolean isChangePasswordSuccess() {
         try {
-            Thread.sleep(2000);
-            List<WebElement> allTexts = driver.findElements(By.className("android.widget.TextView"));
-            System.out.println("[DEBUG] Teks setelah Save Password:");
-            for (WebElement el : allTexts) {
-                System.out.println("  >> '" + el.getText() + "'");
-            }
+            System.out.println("LOG: Menunggu respons pembaruan password dari server...");
+            // Beri waktu napas tambahan bagi server/firebase untuk memproses penggantian password valid
+            Thread.sleep(3500);
+
+            // Coba deteksi alert/toast sukses yang mengandung kata kunci positif
             By successAlert = By.xpath(
-                    "//*[contains(@text,'Sukses') or contains(@text,'berhasil') or contains(@text,'success')]"
+                    "//*[contains(@text,'Sukses') or contains(@text,'berhasil') or contains(@text,'success') or contains(@text,'Success')]"
             );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.visibilityOfElementLocated(successAlert));
-            System.out.println("LOG: Popup sukses terdeteksi.");
-            return true;
-        } catch (Exception e) {
-            // Cek dialog tertutup
-            try {
-                By dialogTitle = By.xpath("//android.widget.TextView[@text='Change Password']");
-                new WebDriverWait(driver, Duration.ofSeconds(3))
-                        .until(ExpectedConditions.invisibilityOfElementLocated(dialogTitle));
-                System.out.println("LOG: Dialog tertutup = sukses.");
+            List<WebElement> alerts = driver.findElements(successAlert);
+            if (!alerts.isEmpty()) {
+                System.out.println("LOG: Popup/Toast sukses ganti password terdeteksi.");
                 return true;
-            } catch (Exception e2) {
-                System.out.println("LOG: Dialog masih terbuka.");
-                return false;
             }
-        }
+
+            // Fallback Cerdas: Cek apakah modal form dialog otomatis menutup diri (berarti input valid)
+            // Menggunakan deteksi keberadaan input fields ke-2 (New Password)
+            By fieldNewPassword = By.xpath("(//android.widget.EditText)[2]");
+            int checkField = driver.findElements(fieldNewPassword).size();
+
+            if (checkField == 0) {
+                System.out.println("LOG: Form dialog ganti password berhasil menutup otomatis. Skenario Sukses.");
+                return true;
+            }
+        } catch (Exception ignored) {}
+
+        System.out.println("LOG: Dialog masih terbuka.");
+        return false;
     }
 
     public boolean isChangePasswordError() {
         try {
-            Thread.sleep(2000);
-            List<WebElement> allTexts = driver.findElements(By.className("android.widget.TextView"));
-            System.out.println("[DEBUG] Teks setelah Save Password error:");
-            for (WebElement el : allTexts) {
-                System.out.println("  >> '" + el.getText() + "'");
-            }
-            // Cek popup Gagal
             By errorAlert = By.xpath(
-                    "//*[contains(@text,'Gagal') or contains(@text,'tidak sesuai') or contains(@text,'tidak cocok') or contains(@text,'salah') or contains(@text,'wajib')]"
+                    "//*[contains(@text,'Gagal') or contains(@text,'tidak sesuai') or contains(@text,'tidak cocok') or contains(@text,'salah') or contains(@text,'wajib') or contains(@text,'Error')]"
             );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
+            new WebDriverWait(driver, Duration.ofSeconds(4))
                     .until(ExpectedConditions.visibilityOfElementLocated(errorAlert));
             return true;
         } catch (Exception e) {
-            // Kalau tidak ada popup, cek dialog masih terbuka = error
             try {
-                By saveBtn = By.xpath("//android.widget.TextView[@text='Save Password']");
-                driver.findElement(saveBtn);
-                System.out.println("LOG: Dialog masih terbuka = error terdeteksi.");
+                By fieldCurrentPassword = By.xpath("(//android.widget.EditText)[1]");
+                driver.findElement(fieldCurrentPassword);
+                System.out.println("LOG: Form masih terbuka pasca submit salah = error terkonfirmasi.");
                 return true;
             } catch (Exception e2) {
                 return false;
@@ -157,6 +164,7 @@ public class ProfilePage {
     // =================== CHANGE EMAIL ===================
 
     public void clickChangeEmail() {
+        scrollToText("Change Email"); // Gulir ke bawah dulu mencari tombol Change Email
         wait.until(ExpectedConditions.elementToBeClickable(btnChangeEmail)).click();
         System.out.println("LOG: Tombol Change Email diklik.");
     }
@@ -178,9 +186,9 @@ public class ProfilePage {
     public void clickSaveEmail() {
         try {
             WebElement btn = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath("(//android.widget.TextView[@text='Change Email'])[last()]")));
+                    By.xpath("(//*[@text='Change Email' or contains(@text,'Save') or contains(@text,'Simpan')])[last()]")));
             tapElement(btn);
-            Thread.sleep(2000);
+            System.out.println("LOG: Perintah simpan email dikirim.");
         } catch (Exception e) {
             throw new RuntimeException("Tombol Save Email tidak bisa diklik: " + e.getMessage());
         }
@@ -188,45 +196,38 @@ public class ProfilePage {
 
     public boolean isChangeEmailSuccess() {
         try {
-            Thread.sleep(2000);
-            List<WebElement> allTexts = driver.findElements(By.className("android.widget.TextView"));
-            System.out.println("[DEBUG] Teks setelah Save Email:");
-            for (WebElement el : allTexts) {
-                System.out.println("  >> '" + el.getText() + "'");
-            }
+            System.out.println("LOG: Menunggu respons pembaruan email dari server...");
+            Thread.sleep(3500);
+
             By successAlert = By.xpath(
-                    "//*[contains(@text,'Sukses') or contains(@text,'berhasil') or contains(@text,'success')]"
+                    "//*[contains(@text,'Sukses') or contains(@text,'berhasil') or contains(@text,'success') or contains(@text,'Success')]"
             );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.visibilityOfElementLocated(successAlert));
-            System.out.println("LOG: Email sukses terdeteksi.");
-            return true;
-        } catch (Exception e) {
-            try {
-                By dialogTitle = By.xpath("//android.widget.TextView[@text='Change Email']");
-                new WebDriverWait(driver, Duration.ofSeconds(3))
-                        .until(ExpectedConditions.invisibilityOfElementLocated(dialogTitle));
-                System.out.println("LOG: Dialog Email tertutup = sukses.");
+            List<WebElement> alerts = driver.findElements(successAlert);
+            if (!alerts.isEmpty()) {
+                System.out.println("LOG: Popup/Toast sukses ganti email terdeteksi.");
                 return true;
-            } catch (Exception e2) {
-                System.out.println("LOG: Dialog masih terbuka.");
-                return false;
             }
-        }
+
+            // Fallback Cerdas: Cek apakah modal form dialog ganti email menutup diri
+            By fieldVerifyPassword = By.xpath("(//android.widget.EditText)[1]");
+            int checkField = driver.findElements(fieldVerifyPassword).size();
+
+            if (checkField == 0) {
+                System.out.println("LOG: Form dialog ganti email berhasil menutup otomatis. Skenario Sukses.");
+                return true;
+            }
+        } catch (Exception ignored) {}
+
+        System.out.println("LOG: Dialog email masih terbuka.");
+        return false;
     }
 
     public boolean isChangeEmailError() {
         try {
-            Thread.sleep(2000);
-            List<WebElement> allTexts = driver.findElements(By.className("android.widget.TextView"));
-            System.out.println("[DEBUG] Teks setelah Save Email error:");
-            for (WebElement el : allTexts) {
-                System.out.println("  >> '" + el.getText() + "'");
-            }
             By errorAlert = By.xpath(
-                    "//*[contains(@text,'Gagal') or contains(@text,'salah') or contains(@text,'tidak') or contains(@text,'wajib') or contains(@text,'invalid')]"
+                    "//*[contains(@text,'Gagal') or contains(@text,'salah') or contains(@text,'tidak') or contains(@text,'wajib') or contains(@text,'invalid') or contains(@text,'Error')]"
             );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
+            new WebDriverWait(driver, Duration.ofSeconds(4))
                     .until(ExpectedConditions.visibilityOfElementLocated(errorAlert));
             return true;
         } catch (Exception e) {

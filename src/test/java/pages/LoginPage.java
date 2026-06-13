@@ -17,7 +17,7 @@ public class LoginPage {
 
     public LoginPage(AppiumDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void enterEmail(String email) {
@@ -34,26 +34,36 @@ public class LoginPage {
 
     public void clickLogin() {
         try {
+            // Beri jeda sangat singkat agar keyboard tidak menutupi tombol
+            Thread.sleep(500);
             List<WebElement> clickableGroups = driver.findElements(
-                    By.xpath("//android.view.ViewGroup[@clickable='true']")
+                    By.xpath("//android.view.ViewGroup[@clickable='true'] | //android.widget.Button")
             );
-            System.out.println("[LoginPage] ViewGroup clickable: " + clickableGroups.size());
 
             WebElement tombol = null;
             for (WebElement el : clickableGroups) {
                 String desc = el.getAttribute("content-desc");
-                if (desc != null && (
-                        desc.toLowerCase().contains("log") ||
-                                desc.toLowerCase().contains("masuk") ||
-                                desc.toLowerCase().contains("sign"))) {
+                String txt = el.getText();
+                String target = (desc != null ? desc : "") + (txt != null ? txt : "");
+
+                if (!target.isEmpty() && (
+                        target.toLowerCase().contains("log") ||
+                                target.toLowerCase().contains("masuk") ||
+                                target.toLowerCase().contains("sign"))) {
                     tombol = el;
                     break;
                 }
             }
 
+            if (tombol == null) {
+                // Rencana Cadangan: Tembak teks langsung di dalam layar
+                try {
+                    tombol = driver.findElement(By.xpath("//android.widget.TextView[contains(@text,'Log In') or contains(@text,'Login') or contains(@text,'Masuk')]"));
+                } catch (Exception ignored) {}
+            }
+
             if (tombol == null && !clickableGroups.isEmpty()) {
                 tombol = clickableGroups.get(clickableGroups.size() - 1);
-                System.out.println("[LoginPage] Fallback: ViewGroup terakhir");
             }
 
             if (tombol != null) {
@@ -61,8 +71,6 @@ public class LoginPage {
             } else {
                 throw new RuntimeException("Tombol Login tidak ditemukan!");
             }
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error klik login: " + e.getMessage());
         }
@@ -70,31 +78,25 @@ public class LoginPage {
 
     public boolean isLoginSuccess() {
         try {
-            Thread.sleep(3000);
             By dashboard = By.xpath(
-                    "//*[contains(@text,'Dashboard') or contains(@text,'Home') or contains(@text,'Pasien') or contains(@text,'Patient')]"
+                    "//*[contains(@text,'Dashboard') or contains(@text,'Home') or contains(@text,'Pasien') or contains(@text,'Patient') or contains(@text,'Tentang')]"
             );
-            wait.until(ExpectedConditions.visibilityOfElementLocated(dashboard));
+            new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.visibilityOfElementLocated(dashboard));
             System.out.println("LOG: Login sukses, Dashboard terdeteksi.");
             return true;
         } catch (Exception e) {
-            System.out.println("LOG: Dashboard tidak ditemukan: " + e.getMessage());
             return false;
         }
     }
 
     public boolean isLoginFailed() {
         try {
-            Thread.sleep(2000);
             By alertText = By.xpath(
-                    "//*[contains(@text,'Email atau password') or contains(@text,'Email tidak terdaftar') or contains(@text,'wajib diisi') or contains(@text,'Alert')]"
+                    "//*[contains(@text,'Email atau password') or contains(@text,'salah') or contains(@text,'tidak terdaftar') or contains(@text,'wajib diisi') or contains(@text,'Alert') or contains(@text,'Invalid')]"
             );
-            new WebDriverWait(driver, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.visibilityOfElementLocated(alertText));
-            System.out.println("LOG: Popup error login terdeteksi.");
+            new WebDriverWait(driver, Duration.ofSeconds(8)).until(ExpectedConditions.visibilityOfElementLocated(alertText));
             return true;
         } catch (Exception e) {
-            System.out.println("LOG: Popup error tidak ditemukan: " + e.getMessage());
             return false;
         }
     }

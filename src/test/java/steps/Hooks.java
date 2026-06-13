@@ -16,8 +16,7 @@ public class Hooks {
 
     @Before
     public void setUp() throws MalformedURLException {
-        String apkPath = "/Users/gurveenderjeetkaur/Downloads/Tentang Dental.apk";
-
+        String apkPath = "C:/Users/CYBORG/Downloads/Tentang Dental.apk";
         UiAutomator2Options options = new UiAutomator2Options()
                 .setPlatformName("Android")
                 .setAutomationName("UiAutomator2")
