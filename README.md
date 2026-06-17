@@ -5,7 +5,7 @@
 [![Cucumber](https://img.shields.io/badge/Cucumber-BDD-brightgreen?logo=cucumber)](https://cucumber.io/)
 [![Maven](https://img.shields.io/badge/Maven-Build-red?logo=apache-maven)](https://maven.apache.org/)
 
-> **Mata Kuliah:** Praktik dan Pengujian Perangkat Lunak (PPPL)  
+> **Mata Kuliah:** Praktik dan Pengujian Perangkat Lunak (PPPL)
 > **Tugas:** Ujian Akhir Semester (UAS) — Pengujian Otomatis Aplikasi Web
 
 ---
