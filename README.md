@@ -1,18 +1,19 @@
 # 🦷 PPPL UAS — Pengujian Otomatis Aplikasi Dental X-Ray
 
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=java)](https://www.java.com)
-[![Selenium](https://img.shields.io/badge/Selenium-4.x-green?logo=selenium)](https://www.selenium.dev/)
+[![Appium](https://img.shields.io/badge/Appium-Android-blue?logo=android)](https://appium.io/)
 [![Cucumber](https://img.shields.io/badge/Cucumber-BDD-brightgreen?logo=cucumber)](https://cucumber.io/)
 [![Maven](https://img.shields.io/badge/Maven-Build-red?logo=apache-maven)](https://maven.apache.org/)
 
 > **Mata Kuliah:** Praktik dan Pengujian Perangkat Lunak (PPPL)
-> **Tugas:** Ujian Akhir Semester (UAS) — Pengujian Otomatis Aplikasi Web
+> **Tugas:** Ujian Akhir Semester (UAS) Kelompok 4
+> **SUT (System Under Test):** Aplikasi Mobile Dental X-Ray (Android APK)
 
 ---
 
 ## 📌 Penjelasan Singkat SUT (System Under Test)
 
-**SUT:** Aplikasi Web **Dental X-Ray** — sebuah sistem manajemen klinik gigi berbasis web yang digunakan oleh admin/tenaga medis untuk:
+**SUT:** Aplikasi Mobile **Tentang Dental** — sebuah sistem manajemen klinik gigi berbasis Android yang digunakan oleh admin/tenaga medis untuk:
 
 | Fitur | Deskripsi |
 |---|---|
@@ -23,41 +24,34 @@
 | **Riwayat Pemeriksaan** | Histori pemeriksaan dan rontgen yang pernah dilakukan |
 | **Profile** | Manajemen profil pengguna, ganti password, dan logout |
 
-Aplikasi diuji secara **end-to-end** menggunakan browser otomatis, mulai dari alur Register → Login → Dashboard → Pilih Pasien → Upload Rontgen → Cek History.
+Aplikasi diuji secara **end-to-end (E2E)** menggunakan otomatisasi berbasis mobile, mulai dari alur Register → Login → Dashboard → Pilih Pasien → Upload Rontgen → Cek History.
 
 ---
 
 ## 🧪 Penjelasan Singkat Test Suite
 
-Test suite dibangun menggunakan **Cucumber BDD (Behavior-Driven Development)** dengan **Selenium WebDriver**, mengikuti pola **Page Object Model (POM)**.
+Test suite dibangun menggunakan **Cucumber BDD (Behavior-Driven Development)** dengan **Appium Java Client & UiAutomator2 Options**, mengikuti pola **Page Object Model (POM)**.
 
 ### Framework & Tools
 - **Bahasa:** Java 17
 - **Build Tool:** Apache Maven
-- **Testing Framework:** Cucumber 7 + JUnit 5
-- **Browser Automation:** Selenium WebDriver 4
+- **Automation Framework:** Appium (Android Driver) + UiAutomator2
+- **Testing Framework:** Cucumber 7 + TestNG
 - **Arsitektur:** Page Object Model (POM)
-- **Laporan:** Cucumber HTML Report
+- **Laporan:** Cucumber HTML Report + Extent Reports (Spark & PDF)
 
 ### Fitur yang Diuji & Jumlah Skenario
 
 | Feature File | Fitur | Jenis Test | Skenario |
 |---|---|---|---|
-| `Login.feature` | Autentikasi Login | Positive & Negative | 2 |
-| `Register.feature` | Registrasi Akun | Positive & Negative | 2 |
-| `Profile.feature` | Profil & Logout & Ganti Password | Positive & Negative | 2 |
+| `Login.feature` | Autentikasi Login | Positive & Negative | 4 |
+| `Register.feature` | Registrasi Akun | Positive & Negative | 4 |
+| `Profile.feature` | Profil & Logout & Ganti Password / Email | Positive & Negative | 7 |
 | `Dashboard.feature` | Tampilan Dashboard & Statistik | Positive | 2 |
 | `PatientList.feature` | Daftar Pasien & Filter Tab | Positive & Negative | 5+ |
 | `ExaminationHistory.feature` | Riwayat Pemeriksaan Rontgen | Positive & Negative | 3+ |
 | `UploadRontgen.feature` | Upload Foto Rontgen JPG/PNG | Positive & Negative | 2+ |
 | `EndToEnd.feature` | Alur Register → Login → Dashboard | E2E | 1 |
-
-**Total:** ±20 skenario uji mencakup **positive test**, **negative test**, dan **end-to-end test**.
-
-### Strategi Pengujian
-- ✅ **Positive Test** — verifikasi fungsionalitas berjalan sesuai ekspektasi
-- ❌ **Negative Test** — verifikasi sistem menangani input/kondisi tidak valid dengan benar
-- 🔄 **End-to-End Test** — verifikasi alur lengkap pengguna dari awal hingga akhir
 
 ---
 
@@ -65,11 +59,9 @@ Test suite dibangun menggunakan **Cucumber BDD (Behavior-Driven Development)** d
 
 | Anggota | NIM | Branch | Tugas |
 |---|---|---|---|
-| **[Nama Anggota 1 / kamu]** | [NIM] | `main` | Menulis test case untuk fitur **Login**, **Register**, dan **Profile** (Page Object, Step Definition, Feature file) |
-| **Devia** | [NIM] | `devia-testing` | Menulis test case untuk fitur **Dashboard**, **Daftar Pasien (Patient List)**, dan **Riwayat Pemeriksaan (Examination History)** |
-| **Zizah** | [NIM] | `zizah-testing` | Integrasi semua fitur, menambahkan test **Upload Foto Rontgen** dan **End-to-End flow**, serta review keseluruhan |
-
-> **Catatan:** Branch `zizah-testing` merupakan branch final yang berisi seluruh hasil pekerjaan kelompok yang telah diintegrasikan.
+| **Gurveenderjeet Kaur** | 24/544341/SV/25392 | `zizah-testing` (Default) | Menulis test case untuk fitur **Login**, **Register**, dan **Profile** (Page Object, Step Definition, Feature file) |
+| **Devia** | 24/542925/SV/25120 | `devia-testing` | Menulis test case untuk fitur **Dashboard**, **Daftar Pasien (Patient List)**, dan **Riwayat Pemeriksaan (Examination History)** |
+| **Zizah** | 24/533921/SV/23957 | `zizah-testing` | Integrasi semua fitur, menambahkan test **Upload Foto Rontgen** dan **End-to-End flow**, serta review keseluruhan |
 
 ---
 
@@ -81,9 +73,6 @@ PPPL-UAS/
 ├── README.md                        # Dokumentasi proyek (file ini)
 ├── bug_report.md                    # Laporan bug yang ditemukan
 └── src/
-    ├── main/
-    │   └── java/org/example/
-    │       └── Main.java
     └── test/
         ├── java/
         │   ├── pages/               # Page Object Model
@@ -103,8 +92,11 @@ PPPL-UAS/
         │   │   ├── PatientListSteps.java
         │   │   ├── ExaminationHistorySteps.java
         │   │   └── HooksDashboard.java
-        │   └── runners/             # Test Runner (Cucumber)
+        │   └── runners/             # Test Runners (Cucumber)
         │       ├── TestRunner.java
+        │       ├── RegisterRunner.java
+        │       ├── LoginRunner.java
+        │       ├── ProfileRunner.java
         │       ├── TestRunnerDashboard.java
         │       ├── TestRunnerPatientList.java
         │       └── TestRunnerExaminationHistory.java
@@ -127,20 +119,22 @@ PPPL-UAS/
 ### Prasyarat
 - Java 17+
 - Maven 3.8+
-- Google Chrome + ChromeDriver (sesuaikan versi)
+- Appium Server v2+ berjalan di host `http://127.0.0.1:4723/`
+- Android Emulator running (sesuaikan deviceName di `Hooks.java`, default: `emulator-5554`)
+- APK target di-download dan diletakkan di path yang sesuai (default: `Downloads/Tentang Dental (1).apk`)
 
 ### Menjalankan Semua Test
 ```bash
 mvn test
 ```
 
-### Menjalankan Test Berdasarkan Tag
+### Menjalankan Test Berdasarkan Tag (Overriding)
 ```bash
 # Hanya test Login
 mvn test -Dcucumber.filter.tags="@Login"
 
-# Hanya test Positive
-mvn test -Dcucumber.filter.tags="@Positive"
+# Hanya test Profile
+mvn test -Dcucumber.filter.tags="@Profile"
 
 # Hanya End-to-End
 mvn test -Dcucumber.filter.tags="@EndToEnd"
@@ -149,21 +143,15 @@ mvn test -Dcucumber.filter.tags="@EndToEnd"
 mvn test -Dcucumber.filter.tags="@UploadRontgen"
 ```
 
-### Melihat Laporan
-Setelah test selesai, laporan HTML tersedia di:
-```
-target/cucumber-reports/
-```
+### Menjalankan Lewat Runner Spesifik
+Anda juga dapat mengeksekusi test runner secara terpisah di IDE Anda dengan menavigasi ke `src/test/java/runners/` dan men-run file berikut:
+- **`TestRunner`**: Menjalankan semua skenario.
+- **`RegisterRunner`**: Hanya menjalankan Register.
+- **`LoginRunner`**: Hanya menjalankan Login.
+- **`ProfileRunner`**: Hanya menjalankan Profile.
 
 ---
 
 ## 🐛 Bug Report
 
 Lihat file [`bug_report.md`](./bug_report.md) untuk daftar lengkap bug yang ditemukan selama pengujian.
-
----
-
-## 📚 Referensi
-- [Cucumber Documentation](https://cucumber.io/docs)
-- [Selenium WebDriver](https://www.selenium.dev/documentation/)
-- [Page Object Model](https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/)
