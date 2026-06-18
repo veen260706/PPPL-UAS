@@ -404,9 +404,7 @@ public class UploadRontgenSteps {
         uploadPage.openGalleryDenganIndeks(1);
     }
 
-    // ============================================================
     // TC-03: Upload file GIF (format tidak didukung / invalid)
-    // ============================================================
     @When("admin upload file gambar GIF")
     public void adminUploadFileGambarGIF() {
         System.out.println("[STEP] TC-03: Mengambil gambar GIF dari Gallery Picker...");

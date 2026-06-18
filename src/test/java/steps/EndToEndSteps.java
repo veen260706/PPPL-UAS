@@ -32,7 +32,7 @@ public class EndToEndSteps {
 
     private String registeredEmail = "e2e" + System.currentTimeMillis() + "@test.com";
     private final String registeredPassword = "Password123!";
-    private String namaPasienTerpilih = "Agus Suharno";
+    private String namaPasienTerpilih = "Ikan kaleng";
 
     // ===================== REGISTER =====================
 

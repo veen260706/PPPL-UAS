@@ -4,9 +4,6 @@ import io.cucumber.java.Before;
 import io.cucumber.java.After;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -17,6 +14,7 @@ public class Hooks {
     @Before
     public void setUp() throws MalformedURLException {
         String apkPath = "C:/Users/CYBORG/Downloads/Tentang Dental.apk";
+
         UiAutomator2Options options = new UiAutomator2Options()
                 .setPlatformName("Android")
                 .setAutomationName("UiAutomator2")
@@ -27,9 +25,15 @@ public class Hooks {
                 .setAdbExecTimeout(Duration.ofSeconds(60))
                 .setAndroidInstallTimeout(Duration.ofSeconds(90));
 
+        // =========================================================================
+        // TAMBAHAN: MENGAKTIFKAN KEYBOARD GAIB APPIUM
+        // =========================================================================
+        options.setCapability("appium:unicodeKeyboard", true);
+        options.setCapability("appium:resetKeyboard", true);
+
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        System.out.println("LOG: Driver siap, aplikasi dibuka ulang.");
+        System.out.println("LOG: Driver siap, aplikasi dibuka ulang dengan keyboard tersembunyi.");
     }
 
     @After
