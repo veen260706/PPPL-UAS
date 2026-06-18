@@ -17,11 +17,33 @@ public class ProfilePage {
 
     private By btnChangePassword = By.xpath("//android.widget.TextView[contains(@text,'Change Password')]");
     private By btnChangeEmail = By.xpath("//android.widget.TextView[contains(@text,'Change Email')]");
-    private By btnLogout = By.xpath("//android.widget.TextView[contains(@text,'Logout')]");
+    private By btnLogout = By.xpath("//android.widget.TextView[contains(@text,'Logout') or contains(@text,'Log Out') or contains(@text,'Keluar') or contains(@text,'LOGOUT') or contains(@text,'LOG OUT')]");
 
     public ProfilePage(AppiumDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+    }
+
+    private void scrollDown() {
+        try {
+            int width = driver.manage().window().getSize().getWidth();
+            int height = driver.manage().window().getSize().getHeight();
+            int startX = width / 2;
+            int startY = (int) (height * 0.7);
+            int endY = (int) (height * 0.3);
+
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 1);
+            swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
+            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), startX, endY));
+            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(swipe));
+            System.out.println("LOG: Scroll down dilakukan.");
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println("LOG: Gagal scroll down: " + e.getMessage());
+        }
     }
 
     private void tapElement(WebElement el) throws Exception {
@@ -40,8 +62,16 @@ public class ProfilePage {
     // =================== LOGOUT ===================
 
     public void clickLogout() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnLogout)).click();
-        System.out.println("LOG: Tombol Logout diklik.");
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(btnLogout)).click();
+            System.out.println("LOG: Tombol Logout diklik.");
+        } catch (Exception e) {
+            System.out.println("LOG: Tombol Logout tidak ditemukan, mencoba scroll down...");
+            scrollDown();
+            wait.until(ExpectedConditions.elementToBeClickable(btnLogout)).click();
+            System.out.println("LOG: Tombol Logout diklik setelah scroll.");
+        }
     }
 
     public boolean isLoggedOut() {
@@ -60,8 +90,16 @@ public class ProfilePage {
     // =================== CHANGE PASSWORD ===================
 
     public void clickChangePassword() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnChangePassword)).click();
-        System.out.println("LOG: Tombol Change Password diklik.");
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(btnChangePassword)).click();
+            System.out.println("LOG: Tombol Change Password diklik.");
+        } catch (Exception e) {
+            System.out.println("LOG: Tombol Change Password tidak ditemukan, mencoba scroll down...");
+            scrollDown();
+            wait.until(ExpectedConditions.elementToBeClickable(btnChangePassword)).click();
+            System.out.println("LOG: Tombol Change Password diklik setelah scroll.");
+        }
     }
 
     public void enterCurrentPassword(String password) {
@@ -110,6 +148,16 @@ public class ProfilePage {
             new WebDriverWait(driver, Duration.ofSeconds(5))
                     .until(ExpectedConditions.visibilityOfElementLocated(successAlert));
             System.out.println("LOG: Popup sukses terdeteksi.");
+
+            // Dismiss the alert if there is an OK button
+            try {
+                By btnOK = By.xpath("//*[@text='OK']");
+                new WebDriverWait(driver, Duration.ofSeconds(3))
+                        .until(ExpectedConditions.elementToBeClickable(btnOK)).click();
+                System.out.println("LOG: Popup OK diklik.");
+                Thread.sleep(1000);
+            } catch (Exception ignored) {}
+
             return true;
         } catch (Exception e) {
             // Cek dialog tertutup
@@ -157,8 +205,16 @@ public class ProfilePage {
     // =================== CHANGE EMAIL ===================
 
     public void clickChangeEmail() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnChangeEmail)).click();
-        System.out.println("LOG: Tombol Change Email diklik.");
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(btnChangeEmail)).click();
+            System.out.println("LOG: Tombol Change Email diklik.");
+        } catch (Exception e) {
+            System.out.println("LOG: Tombol Change Email tidak ditemukan, mencoba scroll down...");
+            scrollDown();
+            wait.until(ExpectedConditions.elementToBeClickable(btnChangeEmail)).click();
+            System.out.println("LOG: Tombol Change Email diklik setelah scroll.");
+        }
     }
 
     public void enterVerifyPassword(String password) {
@@ -200,6 +256,16 @@ public class ProfilePage {
             new WebDriverWait(driver, Duration.ofSeconds(5))
                     .until(ExpectedConditions.visibilityOfElementLocated(successAlert));
             System.out.println("LOG: Email sukses terdeteksi.");
+
+            // Dismiss the alert if there is an OK button
+            try {
+                By btnOK = By.xpath("//*[@text='OK']");
+                new WebDriverWait(driver, Duration.ofSeconds(3))
+                        .until(ExpectedConditions.elementToBeClickable(btnOK)).click();
+                System.out.println("LOG: Popup OK diklik.");
+                Thread.sleep(1000);
+            } catch (Exception ignored) {}
+
             return true;
         } catch (Exception e) {
             try {

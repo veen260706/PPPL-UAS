@@ -16,7 +16,7 @@ public class Hooks {
 
     @Before
     public void setUp() throws MalformedURLException {
-        String apkPath = "/Users/gurveenderjeetkaur/Downloads/Tentang Dental.apk";
+        String apkPath = "/Users/gurveenderjeetkaur/Downloads/Tentang Dental (1).apk";
 
         UiAutomator2Options options = new UiAutomator2Options()
                 .setPlatformName("Android")
@@ -24,6 +24,7 @@ public class Hooks {
                 .setDeviceName("emulator-5554")
                 .setApp(apkPath)
                 .setNoReset(false)  // <-- restart app tiap scenario
+                .setFullReset(true) // <-- uninstall app lama dan install ulang yang baru
                 .setUiautomator2ServerLaunchTimeout(Duration.ofSeconds(90))
                 .setAdbExecTimeout(Duration.ofSeconds(60))
                 .setAndroidInstallTimeout(Duration.ofSeconds(90));

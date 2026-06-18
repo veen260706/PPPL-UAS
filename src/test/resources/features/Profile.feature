@@ -31,8 +31,9 @@ Feature: Profile Dental X-Ray
     Given User sudah login dan berada di halaman Profile
     When User menekan tombol Change Password
     And User memasukkan current password "Password123"
-    And User memasukkan new password "Password123"
-    And User memasukkan confirm new password "Password123"
+    And User memasukkan new password "NewPassword123"
+    And User memasukkan confirm new password "NewPassword123"
+    And User menekan tombol Save Password
     Then Password berhasil diubah
 
   @Profile @Negative
@@ -61,3 +62,10 @@ Feature: Profile Dental X-Ray
     And User memasukkan new email "testloginbaru@gmail.com"
     And User menekan tombol Save Email
     Then Email berhasil diubah
+
+  @Profile @Positive @Cleanup
+    Scenario: Mengembalikan email dan password ke data awal untuk testing berikutnya
+      Given User sudah login dengan email baru "testloginbaru@gmail.com"
+      When User mengganti kembali emailnya menjadi email awal
+      And User mengganti kembali passwordnya menjadi "Password123"
+      Then Data testing berhasil di-reset ke awal

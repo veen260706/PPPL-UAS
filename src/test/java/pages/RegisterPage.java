@@ -19,6 +19,8 @@ public class RegisterPage {
     private By checkboxAgree = By.xpath("(//android.widget.TextView[contains(@text, 'Agree') or contains(@text, 'Term')])[1]");
     private By btnRegister = By.xpath("(//android.widget.TextView[contains(@text, 'Sign Up')])[1]");
 
+    public static String lastGeneratedEmail = "";
+
     public RegisterPage(AppiumDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
@@ -36,6 +38,7 @@ public class RegisterPage {
             long random = System.currentTimeMillis() % 100000;
             email = parts[0] + random + "@" + parts[1];
         }
+        lastGeneratedEmail = email;
         System.out.println("LOG: Email unik: " + email);
         WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(inputEmail));
         field.clear();
