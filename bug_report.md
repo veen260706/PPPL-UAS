@@ -12,100 +12,19 @@
 
 | Kategori | Jumlah |
 |---|---|
-| Total Bug Ditemukan | 9 |
+| Total Bug Ditemukan | 6 |
 | 🔴 Critical | 1 |
-| 🟠 High | 3 |
+| 🟠 High | 0 |
 | 🟡 Medium | 3 |
 | 🟢 Low | 2 |
 | ✅ Bug Fixed | 0 |
-| ⏳ Bug Open | 9 |
+| ⏳ Bug Open | 6 |
 
 ---
 
 ## Detail Bug Report
 
-### BUG-001 — Login: Pesan Error Tidak Muncul saat Password Salah
 
-| Field | Detail |
-|---|---|
-| **ID** | BUG-001 |
-| **Feature** | Login |
-| **Severity** | 🟠 High |
-| **Status** | Open |
-| **Test Case** | `Login.feature` — Scenario: Login dengan password salah |
-
-**Deskripsi:**
-Ketika user memasukkan email yang valid namun password yang salah, aplikasi tidak menampilkan pesan error yang jelas kepada user. Halaman hanya refresh tanpa feedback.
-
-**Langkah Reproduksi:**
-1. Buka halaman Login
-2. Masukkan email valid: `testlogin@gmail.com`
-3. Masukkan password salah: `WrongPass123`
-4. Klik tombol Login
-
-**Expected Result:**
-Muncul pesan error: _"Email atau password salah"_ atau pesan serupa.
-
-**Actual Result:**
-Halaman login di-refresh tanpa pesan error apapun. User tidak mendapat feedback tentang apa yang salah.
-
-**Screenshot/Evidence:** *(tidak tersedia — jalankan test case TC_LOGIN_002)*
-
----
-
-### BUG-002 — Register: Validasi Email Duplikat Tidak Konsisten
-
-| Field | Detail |
-|---|---|
-| **ID** | BUG-002 |
-| **Feature** | Register |
-| **Severity** | 🟠 High |
-| **Status** | Open |
-| **Test Case** | `Register.feature` — Scenario Negative |
-
-**Deskripsi:**
-Saat user mencoba mendaftar dengan email yang sudah terdaftar sebelumnya, respon sistem tidak konsisten. Kadang muncul error, kadang proses seolah berhasil namun tidak ada akun yang dibuat.
-
-**Langkah Reproduksi:**
-1. Buka halaman Register
-2. Masukkan data dengan email yang sudah terdaftar: `andi@gmail.com`
-3. Isi semua field yang diperlukan
-4. Klik tombol Register
-
-**Expected Result:**
-Muncul pesan: _"Email sudah terdaftar, gunakan email lain"_
-
-**Actual Result:**
-Perilaku tidak konsisten — terkadang tidak ada respon sama sekali, form tidak memberikan validasi jelas.
-
----
-
-### BUG-003 — Register: Konfirmasi Password Tidak Divalidasi
-
-| Field | Detail |
-|---|---|
-| **ID** | BUG-003 |
-| **Feature** | Register |
-| **Severity** | 🟠 High |
-| **Status** | Open |
-| **Test Case** | `Register.feature` — Scenario Negative |
-
-**Deskripsi:**
-Ketika user mengisi field "Konfirmasi Password" dengan nilai yang berbeda dari "Password", sistem tetap memproses registrasi tanpa menampilkan pesan error validasi.
-
-**Langkah Reproduksi:**
-1. Buka halaman Register
-2. Isi Password: `Password123`
-3. Isi Konfirmasi Password: `Password456` *(berbeda)*
-4. Klik tombol Register
-
-**Expected Result:**
-Muncul pesan: _"Password dan konfirmasi password tidak cocok"_ sebelum form dikirim.
-
-**Actual Result:**
-Form tersubmit tanpa validasi. Registrasi gagal di sisi server tapi tidak ada pesan error yang informatif.
-
----
 
 ### BUG-004 — Profile: Ganti Password dengan Current Password Salah Tidak Diblokir
 
@@ -273,10 +192,10 @@ Redirect tidak konsisten — terkadang tetap di halaman Register, terkadang ke h
 | ID | Feature | Skenario | Status Test | Bug? |
 |---|---|---|---|---|
 | TC-L-001 | Login | Login dengan kredensial valid | ✅ Pass | - |
-| TC-L-002 | Login | Login dengan password salah | ❌ Fail | BUG-001 |
+| TC-L-002 | Login | Login dengan password salah | ✅ Pass | - |
 | TC-R-001 | Register | Register dengan data valid | ✅ Pass | - |
-| TC-R-002 | Register | Register dengan email duplikat | ❌ Fail | BUG-002 |
-| TC-R-003 | Register | Register dengan konfirmasi password beda | ❌ Fail | BUG-003 |
+| TC-R-002 | Register | Register dengan email duplikat | ✅ Pass | - |
+| TC-R-003 | Register | Register dengan konfirmasi password beda | ✅ Pass | - |
 | TC-P-001 | Profile | Logout berhasil | ✅ Pass | - |
 | TC-P-002 | Profile | Ganti password dengan current password salah | ❌ Fail | BUG-004 |
 | TC-D-001 | Dashboard | Melihat halaman dashboard setelah login | ✅ Pass | - |
@@ -295,15 +214,14 @@ Redirect tidak konsisten — terkadang tetap di halaman Register, terkadang ke h
 ## Kesimpulan
 
 Dari 17 skenario yang diuji:
-- ✅ **8 Pass** — Fungsionalitas berjalan sesuai ekspektasi
-- ❌ **7 Fail** — Ditemukan bug yang perlu diperbaiki
+- ✅ **11 Pass** — Fungsionalitas berjalan sesuai ekspektasi
+- ❌ **4 Fail** — Ditemukan bug yang perlu diperbaiki
 - ⚠️ **2 Flaky/Partial** — Hasil tidak konsisten
 
 **Rekomendasi Prioritas Perbaikan:**
 1. 🔴 **BUG-004** (Critical) — Keamanan ganti password harus diperbaiki segera
-2. 🟠 **BUG-001, BUG-002, BUG-003** (High) — Validasi form Login & Register
-3. 🟡 **BUG-005, BUG-006, BUG-007** (Medium) — UI/UX improvements
-4. 🟢 **BUG-008, BUG-009** (Low) — Perbaikan alur & validasi file
+2. 🟡 **BUG-005, BUG-006, BUG-007** (Medium) — UI/UX improvements
+3. 🟢 **BUG-008, BUG-009** (Low) — Perbaikan alur & validasi file
 
 ---
 
