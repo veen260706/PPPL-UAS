@@ -59,9 +59,9 @@ Test suite dibangun menggunakan **Cucumber BDD (Behavior-Driven Development)** d
 
 | Anggota | NIM | Branch | Tugas |
 |---|---|---|---|
-| **Gurveenderjeet Kaur** | 24/544341/SV/25392 | `zizah-testing` (Default) | Menulis test case untuk fitur **Login**, **Register**, dan **Profile** (Page Object, Step Definition, Feature file) |
+| **Gurveender J Kaur** | 24/544341/SV/25392 | `gurveen---testing` | Menulis test case untuk fitur **Login**, **Register**, dan **Profile** (Page Object, Step Definition, Feature file) |
 | **Devia** | 24/542925/SV/25120 | `devia-testing` | Menulis test case untuk fitur **Dashboard**, **Daftar Pasien (Patient List)**, dan **Riwayat Pemeriksaan (Examination History)** |
-| **Zizah** | 24/533921/SV/23957 | `zizah-testing` | Integrasi semua fitur, menambahkan test **Upload Foto Rontgen** dan **End-to-End flow**, serta review keseluruhan |
+| **Azizah** | 24/533921/SV/23957 | `zizah-testing` (Default) | Integrasi semua fitur, menambahkan test **Upload Foto Rontgen** dan **End-to-End flow**, serta review keseluruhan |
 
 ---
 
