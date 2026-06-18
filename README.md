@@ -1,11 +1,11 @@
-# 🦷 PPPL UAS — Pengujian Otomatis Aplikasi Dental X-Ray
+# PPPL UAS — Pengujian Otomatis Aplikasi Dental X-Ray
 
 [![Java](https://img.shields.io/badge/Java-17-orange?logo=java)](https://www.java.com)
 [![Appium](https://img.shields.io/badge/Appium-Android-blue?logo=android)](https://appium.io/)
 [![Cucumber](https://img.shields.io/badge/Cucumber-BDD-brightgreen?logo=cucumber)](https://cucumber.io/)
 [![Maven](https://img.shields.io/badge/Maven-Build-red?logo=apache-maven)](https://maven.apache.org/)
 
-> **Mata Kuliah:** Praktik dan Pengujian Perangkat Lunak (PPPL)
+> **Mata Kuliah:** Praktikum Pengujian Perangkat Lunak (PPPL)
 > **Tugas:** Ujian Akhir Semester (UAS) Kelompok 4
 > **SUT (System Under Test):** Aplikasi Mobile Dental X-Ray (Android APK)
 
